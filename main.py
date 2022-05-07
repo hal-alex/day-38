@@ -1,5 +1,5 @@
 import requests
-
+from datetime import datetime
 
 
 user_activity_input = input("Tell me what sporting activity you did today: ")
@@ -17,25 +17,35 @@ parameters = {
 
 response = requests.post(url=FITNESS_APP_URL, headers=headers, json=parameters)
 result = response.json()
-activity = result["exercises"][0]["name"].title()
-duration = result["exercises"][0]["duration_min"]
-calories = result["exercises"][0]["nf_calories"]
-print(result)
-print(activity)
-print(duration)
-print(calories)
+# activity = result["exercises"][0]["name"].title()
+# duration = result["exercises"][0]["duration_min"]
+# calories = result["exercises"][0]["nf_calories"]
+# print(result)
+# print(activity)
+# print(duration)
+# print(calories)
 
-sheety_payload = {
-    "sheet1": {
-        "date": 10,
-        "time": 10,
-        "exercise": activity,
-        "duration": duration,
-        "calories": calories,
-    }
 
+today_date = datetime.now().strftime("%d/%m/%Y")
+now_time = datetime.now().strftime("%X")
+
+headers = {
+    "Authorization": "Bearer lk1j23hkj12h312jk3h12kjhkj46h45kj6h7kljh34kj5h34lk5jh34lk5jh"
 }
 
-adding_to_sheet = requests.post(url=SHEETY_APP_URL, json=sheety_payload)
-print(adding_to_sheet)
+
+for exercise in result["exercises"]:
+    sheety_payload = {
+        "sheet1": {
+            "date": today_date,
+            "time": now_time,
+            "exercise": exercise["name"].title(),
+            "duration": exercise["duration_min"],
+            "calories": exercise["nf_calories"],
+        }
+
+    }
+
+    adding_to_sheet = requests.post(url=SHEETY_APP_URL, json=sheety_payload, headers=headers)
+    print(adding_to_sheet.text)
 
